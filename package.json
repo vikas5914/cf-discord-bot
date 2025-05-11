@@ -1,0 +1,25 @@
+{
+	"name": "cf-discord-bot",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"cf-typegen": "wrangler types",
+		"register": "bun --env-file=.dev.vars run src/register.ts"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.27",
+		"@cloudflare/workers-types": "^4.20250508.0",
+		"@types/bun": "^1.2.12",
+		"discord-api-types": "^0.38.3",
+		"typescript": "^5.8.3",
+		"vitest": "~3.0.9",
+		"wrangler": "^4.14.4"
+	},
+	"dependencies": {
+		"discord-hono": "^0.18.1"
+	}
+}
