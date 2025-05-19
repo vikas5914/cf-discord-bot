@@ -11,6 +11,11 @@ type CaptchaResult = {
 	imageBlob: Blob;
 };
 
+type GiftCodeResponse = {
+	code: number;
+	message: string;
+};
+
 export async function getCaptcha(gameName: GameName): Promise<CaptchaResult> {
 	const baseUrl =
 		gameName === "capybarago"
@@ -33,3 +38,94 @@ export async function getCaptcha(gameName: GameName): Promise<CaptchaResult> {
 		imageBlob: blob,
 	};
 }
+
+export async function solveCaptcha(
+	gameName: GameName,
+	code: string,
+	captchaId: string,
+	captcha: string
+): Promise<string> {
+	try {
+		const baseUrl =
+			gameName === "capybarago"
+				? "https://prod-mail.habbyservice.com/Capybara/api/v1/giftcode/claim"
+				: "https://prod-mail.habbyservice.com/Survivor/api/v1/giftcode/claim";
+
+		const userId = gameName === "capybarago" ? "11605599" : "104063632";
+
+		console.log({
+			baseUrl,
+			userId: userId,
+			giftCode: code,
+			captchaId: captchaId,
+			captcha: captcha,
+		});
+
+		const response = await fetch(baseUrl, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				userId: userId,
+				giftCode: code,
+				captchaId: captchaId,
+				captcha: captcha,
+			}),
+		});
+
+		if (!response.ok) {
+			return `API request failed with status ${response.status}`;
+		}
+
+		const data = (await response.json()) as GiftCodeResponse;
+		const message = codeMessages.find((m) => m.code === data.code)?.message;
+		return message || data.message || data.code.toString();
+	} catch (error) {
+		return error instanceof Error ? error.message : "An unknown error occurred";
+	}
+}
+
+export function getCode(codeOrUrl: string) {
+	if (codeOrUrl.includes("https://")) {
+		const url = new URL(codeOrUrl);
+		return url.searchParams.get("code");
+	}
+	return codeOrUrl;
+}
+
+const codeMessages = [
+	{
+		code: 0,
+		message:
+			"Congratulations! Your rewards have been sent to your in-game Mailbox. Go and check it out!",
+	},
+	{ code: 20001, message: "Redeem failed; information incorrect" },
+	{ code: 20002, message: "Redeem failed; incorrect Verification Code" },
+	{
+		code: 20003,
+		message: "Oh no, we suspect your ID is incorrect. Please check again.",
+	},
+	{
+		code: 20401,
+		message:
+			"Oh no, we suspect your Rewards Code is incorrect. Please check again.",
+	},
+	{ code: 20402, message: "Oh no, your Rewards Code has already been used!" },
+	{ code: 20403, message: "Oh no, your Rewards Code has expired..." },
+	{
+		code: 20404,
+		message: "Redeem code is not activated, please try it later.",
+	},
+	{
+		code: 20409,
+		message:
+			"This redemption code has already been redeemed and can no longer be redeemed.",
+	},
+	{ code: 20407, message: "Codes of similar items can only be claimed once." },
+	{
+		code: 20410,
+		message: "You are temporarily unable to redeem this gift code.",
+	},
+	{ code: 30001, message: "Server is busy, please try again." },
+];
