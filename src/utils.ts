@@ -24,13 +24,36 @@ export async function getCaptcha(gameName: GameName): Promise<CaptchaResult> {
 
 	// Generate captcha ID
 	const generateResponse = await fetch(`${baseUrl}/generate`, {
+		headers: {
+			accept: "application/json",
+			"accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+			pragma: "no-cache",
+			"user-agent":
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+		},
+		referrer: "https://gift.capybarago.io/",
+		referrerPolicy: "strict-origin-when-cross-origin",
+		body: null,
 		method: "POST",
 	});
+
 	const responseData = (await generateResponse.json()) as CaptchaResponse;
 	const captchaId = responseData.data.captchaId;
 
 	// Fetch captcha image
-	const imageResponse = await fetch(`${baseUrl}/image/${captchaId}`);
+	const imageResponse = await fetch(`${baseUrl}/image/${captchaId}`, {
+		headers: {
+			accept: "application/json",
+			"accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+			pragma: "no-cache",
+			"user-agent":
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+		},
+		referrer: "https://gift.capybarago.io/",
+		referrerPolicy: "strict-origin-when-cross-origin",
+		body: null,
+		method: "GET",
+	});
 	const blob = new Blob([await imageResponse.arrayBuffer()]);
 
 	return {
@@ -64,8 +87,14 @@ export async function solveCaptcha(
 		const response = await fetch(baseUrl, {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/json",
+				accept: "application/json",
+				"accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+				pragma: "no-cache",
+				"user-agent":
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
 			},
+			referrer: "https://gift.capybarago.io/",
+			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({
 				userId: userId,
 				giftCode: code,

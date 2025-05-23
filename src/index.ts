@@ -9,16 +9,7 @@ import {
 import { getCaptcha, getCode, solveCaptcha } from "./utils";
 
 const app = new DiscordHono()
-	.command("hello", (c) => c.res("world!"))
-	.command("help", (c) =>
-		c.res({
-			content: `text: ${c.var.text}`,
-			components: new Components().row(
-				new Button("https://discord-hono.luis.fun", ["📑", "Docs"], "Link"),
-				new Button("delete-self", ["🗑️", "Delete"], "Secondary")
-			),
-		})
-	)
+	.command("ping", (c) => c.res("pong!"))
 	.command("redeem", (c) => {
 		const code = getCode(c.var["gift-code"] as string);
 		return c.res({
